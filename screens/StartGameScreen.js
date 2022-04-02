@@ -1,92 +1,101 @@
-import {View, Text, StyleSheet, Alert, TextInput} from "react-native";
-import PrimaryButton from "../components/ui/PrimaryButton"
-import {useState} from "react";
-import Colors from "../constants/colors";
+import { useState } from 'react';
+import { TextInput, View, StyleSheet, Alert, useWindowDimensions, KeyboardAvoidingView, ScrollView } from 'react-native';
 
-function StartGameScreen ({onPickNumber}) {
-  const [enteredNumber, setEnteredNumber] = useState("");
+import PrimaryButton from '../components/ui/PrimaryButton';
+import Title from '../components/ui/Title';
+import Colors from '../constants/colors';
+import Card from '../components/ui/Card';
+import InstructionText from '../components/ui/InstructionText';
 
-  function numberInputHandler(enteredText) {
-      setEnteredNumber(enteredText);
-  }
+function StartGameScreen({ onPickNumber }) {
+    const [enteredNumber, setEnteredNumber] = useState('');
 
-  function resetInputHandler() {
-      setEnteredNumber("");
-  }
+   const {width, height} = useWindowDimensions();
 
-  function confirmInputHandler() {
-    const chosenNumber = parseInt(enteredNumber);
-    if(isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber > 99) {
-   // Show alert,
-     Alert.alert(
-         "Invalid Number",
-          "Number has to be number between 1 and 99.",
-     [{text: "Okay", style: "destructive", onPress: resetInputHandler}]
-     );
-        return;
+    function numberInputHandler(enteredText) {
+        setEnteredNumber(enteredText);
     }
 
-    onPickNumber(chosenNumber);
-  };
-    
+    function resetInputHandler() {
+        setEnteredNumber('');
+    }
+
+    function confirmInputHandler() {
+        const chosenNumber = parseInt(enteredNumber);
+
+        if (isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber > 99) {
+            Alert.alert(
+                'Invalid number!',
+                'Number has to be a number between 1 and 99.',
+                [{ text: 'Okay', style: 'destructive', onPress: resetInputHandler }]
+            );
+            return;
+        }
+
+        onPickNumber(chosenNumber);
+    }
+
+        const marginTopDistance = height < 380 ? 30 : 100;
+
     return (
-         <View style={styles.inputContainer}>
-            <TextInput 
-            style={styles.numberInput} 
-            maxLength={2} 
-            keyboardType="number-pad"
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={numberInputHandler}
-            value={enteredNumber}
+        <ScrollView style={styles.screen}>
+        <KeyboardAvoidingView style={styles.screen} behavior="position">
+        <View style={[styles.rootContainer, {marginTop: marginTopDistance}]}>
+            <Title>Guess My Number</Title>
+        <Card>
+            <InstructionText>Enter a Number</InstructionText>
+            <TextInput
+                style={styles.numberInput}
+                maxLength={2}
+                keyboardType="number-pad"
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={numberInputHandler}
+                value={enteredNumber}
             />
             <View style={styles.buttonsContainer}>
                 <View style={styles.buttonContainer}>
                     <PrimaryButton onPress={resetInputHandler}>Reset</PrimaryButton>
                 </View>
                 <View style={styles.buttonContainer}>
-                    <PrimaryButton
-                    onPress={confirmInputHandler}
-                    >Confirm</PrimaryButton>
+                    <PrimaryButton onPress={confirmInputHandler}>Confirm</PrimaryButton>
                 </View>
-                </View>
-         </View>
+            </View>
+            </Card>
+        </View>
+        </KeyboardAvoidingView>
+        </ScrollView>
     );
-};
+}
 
 export default StartGameScreen;
 
+//  const deviveHeigth = Dimensions.get("window").height;
+
 const styles = StyleSheet.create({
-inputContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-    marginHorizontal: 24,
-    marginTop: 100,
-    backgroundColor: Colors.primary800,
-    borderRadius: 8,
-    elevation: 4,
-    // Adding shadow for IOS
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 2},
-    shadowRadius: 6,
-    shadowOpacity: 0.25
-}, 
-numberInput: {
-    height: 50,
-    width: 50,
-    fontSize: 32,
-    borderBottomColor: Colors.accent500,
-    borderBottomWidth: 2,
-    color: Colors.accent500,
-    marginVertical: 8,
-    fontWeight: "bold",
-    textAlign: "center"
-},
-  buttonsContainer: {
-      flexDirection: "row"
-  },
-  buttonContainer: {
+    screen: {
       flex: 1
-  }
+    }, 
+    rootContainer: {
+       flex: 1, 
+    //    marginTop: deviveHeigth < 400 ? 30 : 100,
+       alignItems: "center"
+    },
+    numberInput: {
+        height: 50,
+        width: 50,
+        fontSize: 32,
+        borderBottomColor: Colors.accent500,
+        borderBottomWidth: 2,
+        color: Colors.accent500,
+        marginVertical: 8,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    buttonsContainer: {
+        flexDirection: 'row',
+    },
+    buttonContainer: {
+        flex: 1,
+    },
 });
